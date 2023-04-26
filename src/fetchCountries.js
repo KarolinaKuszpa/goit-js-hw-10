@@ -1,7 +1,7 @@
 import Notiflix from 'notiflix';
 const API_ENDPOINT_NAME_COUNTRIES = 'https://restcountries.com/v3.1/all';
 
-function fetchCountries = name=> {
+function fetchCountries() {
   return fetch(API_ENDPOINT_NAME_COUNTRIES)
     .then(response => {
       if (!response.ok) {
