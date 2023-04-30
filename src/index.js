@@ -46,7 +46,7 @@ function searchCountries(searchQuery) {
     })
     .catch(error => {
       console.log(error);
-      Notiflix.Notify.failure('Something went wrong. Please try again.');
+      Notiflix.Notify.failure('Oops, there is no country with that name');
     });
 }
 
