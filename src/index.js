@@ -17,7 +17,7 @@ const delayedSearch = debounce(() => {
 }, 500);
 //Dodaj nasłuchiwanie zdarzenia input na elemencie searchInput i wywołaj funkcję delayedSearch:
 searchInput.addEventListener('input', delayedSearch);
-//przypisywanie zmiennych do el.html
+
 // Przechowywane są odwołania do elementów HTML
 const searchBox = document.getElementById('search-box');
 const countryList = document.querySelector('.country-list');
