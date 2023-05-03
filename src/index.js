@@ -13,6 +13,7 @@ let findCountryName = '';
 //Utwórz funkcję, która będzie wywoływać funkcję searchCountries po opóźnieniu o 500 ms:
 const delayedSearch = debounce(() => {
   const searchQuery = searchInput.value.trim();
+
   searchCountries(searchQuery); // pass searchQuery to searchCountries
 }, 500);
 //Dodaj nasłuchiwanie zdarzenia input na elemencie searchInput i wywołaj funkcję delayedSearch:
@@ -65,8 +66,16 @@ function renderCountryList(countries) {
     .join('');
   countryList.innerHTML = `${html}`;
 }
+//usuwanie wszystkich dzieci elementu countryInfo za pomocą funkcji clearEl()
+function clearEl(element) {
+  while (element.firstChild) {
+    element.removeChild(element.firstChild);
+  }
+}
+
 // funkcja renderCountryInfo wyświetla szczegóły jednego kraju.
 function renderCountryInfo(country) {
+  clearEl(countryInfo);
   // Wypełnienie pola z nazwą kraju
   const countryName = document.createElement('h3');
   countryName.textContent = country.name.official;
