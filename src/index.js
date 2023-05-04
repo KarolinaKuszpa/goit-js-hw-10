@@ -9,25 +9,39 @@ const DEBOUNCE_DELAY = 300;
 const searchInput = document.getElementById('search-box');
 // przechowuje wartość wpisaną przez użytkownika w polu wyszukiwania
 let findCountryName = '';
-
-//Utwórz funkcję, która będzie wywoływać funkcję searchCountries po opóźnieniu o 500 ms:
+searchInput.addEventListener('input', () => {
+  if (!searchInput.value.trim()) {
+    clearEl(countryList);
+    clearEl(countryInfo);
+    findCountryName = '';
+  }
+});
 const delayedSearch = debounce(() => {
   const searchQuery = searchInput.value.trim();
 
-  searchCountries(searchQuery); // pass searchQuery to searchCountries
-}, 500);
+  // wyczyść listę krajów po usunięciu tekstu z pola wyszukiwania
+  if (!searchQuery) {
+    clearEl(countryList);
+    return;
+  }
+  searchCountries(searchQuery);
+}, 300);
 //Dodaj nasłuchiwanie zdarzenia input na elemencie searchInput i wywołaj funkcję delayedSearch:
 searchInput.addEventListener('input', delayedSearch);
 
 // Przechowywane są odwołania do elementów HTML
-const searchBox = document.getElementById('search-box');
+
 const countryList = document.querySelector('.country-list');
 const countryInfo = document.querySelector('.country-info');
 //Funkcja searchCountries pobiera wartość pola wyszukiwania, a następnie wywołuje funkcję fetchCountries z argumentem searchQuery. W funkcji then obsługujemy odpowiedź z funkcji fetchCountries. Jeśli zwrócona tablica zawiera więcej niż 10 krajów, wyświetlimy komunikat, że znaleziono zbyt wiele krajów. Jeśli znajdziemy dokładnie jeden kraj, wywołamy funkcję renderCountryInfo i wyświetlimy szczegóły tego kraju. W przeciwnym razie wywołamy funkcję renderCountryList i wyświetlimy listę krajów.
 function searchCountries(searchQuery) {
   if (!searchQuery) {
+    clearEl(countryList);
+    clearEl(countryInfo);
     return;
   }
+
+  findCountryName = searchQuery;
 
   fetchCountries(searchQuery)
     .then(countries => {
@@ -55,36 +69,54 @@ function searchCountries(searchQuery) {
 
 function renderCountryList(countries) {
   const html = countries
-    .map(
-      country => `
-      <li class="country-list">
-        <img class="country-serach"  src="${country.flags.svg}" alt="${country.name.official} flag" width="75", height="55">
-        <span>${country.name.official}</span>
-      </li>
-    `
+    .filter(
+      country =>
+        country.name.common.toLowerCase() === findCountryName.toLowerCase()
     )
+    .map(country => {
+      return `
+        <li class="country-list">
+          <img class="country-serach"  src="${country.flags.svg}" alt="${country.name.official} flag" width="75", height="55">
+          <span>${country.name.common}</span>
+        </li>
+      `;
+    })
     .join('');
-  countryList.innerHTML = `${html}`;
+
+  countryList.innerHTML = html;
+
+  if (!html) {
+    clearEl(countryInfo);
+  }
 }
+
 //usuwanie wszystkich dzieci elementu countryInfo za pomocą funkcji clearEl()
 function clearEl(element) {
   while (element.firstChild) {
     element.removeChild(element.firstChild);
+  }
+  const countryFlag = document.querySelector('.country-flag');
+  if (countryFlag) {
+    countryFlag.remove();
+  }
+  const countryName = document.querySelector('.country-name');
+  if (countryName) {
+    countryName.remove();
   }
 }
 
 // funkcja renderCountryInfo wyświetla szczegóły jednego kraju.
 function renderCountryInfo(country) {
   clearEl(countryInfo);
-  // Wypełnienie pola z nazwą kraju
+
   const countryName = document.createElement('h3');
+  countryName.className = 'country-name';
   countryName.textContent = country.name.official;
   countryInfo.appendChild(countryName);
 
-  // Wypełnienie pola z flagą kraju
   const countryFlag = document.createElement('img');
+  countryFlag.className = 'country-flag';
   countryFlag.src = country.flags.svg;
-
   countryFlag.alt = `${country.name.official} flag`;
   countryInfo.appendChild(countryFlag);
 
@@ -112,3 +144,9 @@ function renderCountryInfo(country) {
   countryInfo.appendChild(languagesLabel);
   countryInfo.appendChild(languages);
 }
+searchInput.addEventListener('blur', () => {
+  // wyczyść listę krajów po wyczyszczeniu pola wyszukiwania
+  if (!searchInput.value.trim()) {
+    clearEl(countryList);
+  }
+});
