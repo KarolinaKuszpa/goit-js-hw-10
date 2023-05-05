@@ -49,15 +49,20 @@ function searchCountries(searchQuery) {
         Notiflix.Notify.info(
           'Too many matches found. Please enter a more specific name.'
         );
-        return;
+        // return;
       }
 
       if (countries.length === 1) {
-        renderCountryInfo(countries[0]);
-        return;
-      }
+        clearEl(countryList);
 
-      renderCountryList(countries);
+        renderCountryInfo(countries[0]);
+        // return;
+      }
+      if (countries.length > 1 && countries.length < 10) {
+        clearEl(countryInfo);
+
+        renderCountryList(countries);
+      }
     })
     .catch(error => {
       console.log(error);
@@ -69,10 +74,6 @@ function searchCountries(searchQuery) {
 
 function renderCountryList(countries) {
   const html = countries
-    .filter(
-      country =>
-        country.name.common.toLowerCase() === findCountryName.toLowerCase()
-    )
     .map(country => {
       return `
         <li class="country-list">
